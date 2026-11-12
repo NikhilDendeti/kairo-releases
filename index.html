@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairo: real-time answers during your calls</title>
+<meta name="description" content="Kairo listens to your call, catches the question, and puts an answer on your screen while you are still talking. English, Hindi and Hinglish. Free 30-minute demo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lime: #9de500; --lime-hover: #8fd400; --lime-soft: #f2f9e8; --lime-line: #d3eca0; --lime-ink: #3d6b00;
+  --ink: #101828; --peach: #ffd7a8; --peach-soft: #fff5e9; --peach-ink: #8a4a0b;
+  --canvas: #f8f9f7; --surface: #ffffff; --sunken: #f3f5f1;
+  --fg: #101828; --fg-2: #667085; --fg-3: #98a2b3; --line: #e8ebe5; --line-strong: #d4d9cf;
+  --danger: #d92d20; --danger-soft: #fef3f2;
+  --o-surface: #101828; --o-sunken: #1a2436; --o-line: #253045; --o-fg: #f2f4f7; --o-fg-2: #a6afbd; --o-code: #0b1220;
+  --radius: 14px; --wrap: 1120px;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--sans); color: var(--fg); background: var(--canvas); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p { margin: 0; }
+.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 20px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 12px; font: 600 15px var(--sans); border: 1px solid transparent; cursor: pointer; transition: background .15s, border-color .15s, transform .15s; white-space: nowrap; }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--lime); color: var(--ink); }
+.btn-primary:hover { background: var(--lime-hover); }
+.btn-dark { background: var(--ink); color: #fff; }
+.btn-dark:hover { background: #1d2939; }
+.btn-ghost { background: var(--surface); border-color: var(--line-strong); color: var(--fg); }
+.btn-ghost:hover { background: var(--sunken); }
+.btn-sm { height: 38px; padding: 0 16px; font-size: 14px; border-radius: 10px; }
+.eyebrow { font-size: 13px; font-weight: 600; color: var(--lime-ink); letter-spacing: .02em; }
+.section { padding: 88px 0; }
+.section-head { max-width: 640px; margin: 0 auto 48px; text-align: center; }
+.section-head h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -.025em; font-weight: 700; margin-top: 10px; text-wrap: balance; }
+.section-head p { margin-top: 14px; color: var(--fg-2); font-size: 17px; }
+
+/* nav */
+.nav { position: sticky; top: 14px; z-index: 20; padding: 0 20px; }
+.nav-in { max-width: var(--wrap); margin: 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 12px 0 18px; background: rgb(255 255 255 / .88); backdrop-filter: saturate(1.4) blur(10px); border: 1px solid var(--line); border-radius: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }
+.mark { width: 30px; height: 30px; border-radius: 9px; background: var(--lime); display: grid; place-items: center; }
+.mark svg { width: 17px; height: 17px; }
+.nav-links { display: flex; gap: 28px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+.nav-links a:hover { color: var(--fg); }
+
+/* hero */
+.hero { position: relative; padding: 76px 0 0; text-align: center; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: -220px 0 auto; height: 760px; background: radial-gradient(60% 60% at 50% 30%, rgb(157 229 0 / .22), transparent 70%); pointer-events: none; }
+.hero > .wrap { position: relative; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 28px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; font-weight: 500; color: var(--fg-2); }
+.chip b { color: var(--fg); font-weight: 600; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+.hero h1 { font-size: clamp(38px, 6.4vw, 68px); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; max-width: 860px; margin: 0 auto; }
+.hero h1 em { font-style: normal; color: #5fa300; }
+.hero .sub { max-width: 620px; margin: 22px auto 0; font-size: clamp(16px, 2vw, 19px); color: var(--fg-2); }
+.cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+.fine { margin-top: 14px; font-size: 13px; color: var(--fg-3); }
+
+/* product mock */
+.stage { position: relative; margin: 56px auto 0; max-width: 1040px; text-align: left; }
+.app { background: var(--surface); border: 1px solid var(--line); border-radius: 18px 18px 0 0; border-bottom: 0; box-shadow: 0 30px 80px -40px rgb(16 24 40 / .35); display: grid; grid-template-columns: 200px 1fr; min-height: 430px; overflow: hidden; }
+.side { border-right: 1px solid var(--line); padding: 18px 14px; font-size: 13px; }
+.side .brand { font-size: 15px; margin-bottom: 20px; }
+.side .mark { width: 24px; height: 24px; border-radius: 7px; }
+.side .mark svg { width: 13px; height: 13px; }
+.side small { display: block; margin: 16px 8px 6px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); font-weight: 600; }
+.side div.item { padding: 8px 10px; border-radius: 8px; color: var(--fg-2); font-weight: 500; }
+.side div.item.on { background: var(--lime-soft); color: var(--fg); }
+.acct { margin-top: 22px; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; background: var(--canvas); }
+.acct b { display: block; font-size: 12px; font-weight: 600; }
+.acct span { font-size: 11px; color: var(--fg-2); }
+.main { padding: 22px 26px; }
+.main h4 { margin: 0; font-size: 16px; font-weight: 600; }
+.main p.s { font-size: 13px; color: var(--fg-2); margin-top: 2px; }
+.row { display: grid; grid-template-columns: 1.4fr .8fr .8fr .7fr; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.row.h { color: var(--fg-3); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; padding: 8px 0; }
+.row b { font-weight: 600; display: block; }
+.row i { font-style: normal; color: var(--fg-2); font-size: 12px; }
+.tag { justify-self: start; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: var(--sunken); color: var(--fg-2); }
+.tag.live { background: var(--lime-soft); color: var(--lime-ink); }
+.overlay { position: absolute; right: -14px; top: 54px; width: 372px; background: var(--o-surface); color: var(--o-fg); border: 1px solid #36435a; border-radius: 14px; box-shadow: 0 30px 60px -20px rgb(16 24 40 / .55); font-size: 12.5px; overflow: hidden; }
+.o-bar { display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 12px; border-bottom: 1px solid var(--o-line); color: var(--o-fg-2); }
+.o-bar .dot { background: var(--lime); }
+.o-bar .sp { flex: 1; }
+.o-end { background: rgb(249 112 102 / .16); color: #f97066; border-radius: 6px; padding: 2px 9px; font-size: 11px; font-weight: 600; }
+.o-them { padding: 10px 12px; border-bottom: 1px solid var(--o-line); color: var(--o-fg-2); line-height: 1.5; }
+.o-them b { color: #76808f; font-weight: 500; margin-right: 6px; }
+.o-ans { padding: 12px; }
+.o-type { display: inline-block; background: rgb(157 229 0 / .14); color: #b5f03a; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; }
+.o-ans p { line-height: 1.6; }
+.o-foot { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--o-line); }
+.o-btn { background: var(--lime); color: var(--ink); border-radius: 8px; padding: 6px 12px; font-weight: 600; font-size: 12px; }
+.o-btn.q { background: var(--o-sunken); color: var(--o-fg); }
+.o-kbd { font-family: var(--mono); font-size: 10.5px; opacity: .7; margin-left: 4px; }
+
+/* works with */
+.strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+.strip .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 36px; padding-top: 22px; padding-bottom: 22px; font-size: 14px; color: var(--fg-2); }
+.strip b { color: var(--fg); font-weight: 600; }
+
+/* features */
+.grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+.card { grid-column: span 2; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+.card.wide { grid-column: span 3; }
+.card h3 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin-top: 14px; }
+.card p { margin-top: 8px; color: var(--fg-2); font-size: 15px; }
+.icon { width: 40px; height: 40px; border-radius: 11px; background: var(--lime-soft); display: grid; place-items: center; color: var(--lime-ink); }
+.icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.code { margin-top: 18px; background: var(--o-code); color: #d5dbe5; border-radius: 12px; overflow: hidden; font-family: var(--mono); font-size: 12.5px; }
+.code .tabs { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid #1d2739; font-family: var(--sans); font-size: 11.5px; color: #a6afbd; }
+.code .tabs span { padding: 3px 9px; border-radius: 6px; }
+.code .tabs .on { background: rgb(157 229 0 / .14); color: #b5f03a; font-weight: 600; }
+.code .tabs .esc { margin-left: auto; background: rgb(157 229 0 / .14); color: #b5f03a; font-weight: 600; }
+.code pre { margin: 0; padding: 14px 16px; line-height: 1.65; overflow-x: auto; }
+.code .k { color: #ff9d7a; } .code .t { color: #7cc5ff; } .code .c { color: #6b7688; }
+.code .note { padding: 8px 16px; border-top: 1px solid #1d2739; font-family: var(--sans); font-size: 11.5px; color: #a6afbd; }
+.lang { margin-top: 18px; display: grid; gap: 8px; }
+.lang div { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: var(--canvas); }
+.lang span { color: var(--fg-2); }
+.lang b { font-weight: 600; }
+.bubble { margin-top: 18px; display: grid; gap: 8px; font-size: 14px; }
+.bubble div { padding: 11px 14px; border-radius: 12px; max-width: 92%; }
+.bubble .q { background: var(--sunken); color: var(--fg-2); }
+.bubble .a { background: var(--lime-soft); color: var(--fg); justify-self: end; border: 1px solid var(--lime-line); }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: s; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; counter-increment: s; }
+.step::before { content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 600; font-size: 14px; }
+.step h3 { margin-top: 16px; font-size: 18px; font-weight: 600; }
+.step p { margin-top: 8px; color: var(--fg-2); font-size: 15px; }
+
+/* pricing */
+.plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+@media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, 1fr); } }
+.plan { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; }
+.plan.pop { border-color: var(--ink); box-shadow: 0 24px 50px -30px rgb(16 24 40 / .4); position: relative; }
+.plan.pop::after { content: 'Recommended'; position: absolute; top: -12px; left: 24px; background: var(--ink); color: #fff; font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+.plan h3 { font-size: 16px; font-weight: 600; }
+.price { margin-top: 12px; font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+.price small { font-size: 14px; font-weight: 500; color: var(--fg-2); letter-spacing: 0; }
+.plan .what { margin-top: 10px; color: var(--fg-2); font-size: 14px; min-height: 42px; }
+.plan ul { list-style: none; padding: 0; margin: 20px 0 26px; display: grid; gap: 11px; font-size: 14.5px; flex: 1; }
+.plan li { display: flex; gap: 10px; align-items: flex-start; }
+.plan li::before { content: ''; flex: none; width: 18px; height: 18px; margin-top: 2px; border-radius: 50%; background: var(--lime-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.6 2.6L13 6.4' fill='none' stroke='%233d6b00' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat; }
+.plan li.no { color: var(--fg-3); }
+.plan li.no::before { background: var(--sunken) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M6 9h6' fill='none' stroke='%2398a2b3' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center / 18px no-repeat; }
+.plan .btn { width: 100%; }
+.pnote { margin-top: 22px; text-align: center; font-size: 13.5px; color: var(--fg-2); }
+
+/* price comparison: theirs in red, ours in green */
+.cmp { --red: #d92d20; --red-soft: #fef3f2; --red-line: #fecdca; --green: #2f7d00; }
+.duel { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 70px -45px rgb(16 24 40 / .45); overflow: hidden; }
+.side-them, .side-us { padding: 34px 32px; display: flex; flex-direction: column; gap: 6px; }
+.side-them { background: linear-gradient(180deg, var(--red-soft), #fff 85%); }
+.side-us { background: linear-gradient(180deg, var(--lime-soft), #fff 85%); position: relative; }
+.who { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: .01em; }
+.side-them .who { color: var(--red); }
+.side-us .who { color: var(--green); }
+.who i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.for { font-size: 14px; color: var(--fg-2); }
+.big { font-size: clamp(44px, 7vw, 76px); font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.side-them .big { color: var(--red); text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: rgb(217 45 32 / .55); }
+.side-us .big { color: var(--green); }
+.small { font-size: 13.5px; color: var(--fg-2); margin-top: 8px; }
+.vs { display: grid; place-items: center; padding: 0 4px; background: linear-gradient(180deg, var(--red-soft), var(--lime-soft)); position: relative; width: 0; z-index: 2; }
+.vs span { position: absolute; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; letter-spacing: .04em; box-shadow: 0 0 0 6px var(--surface); }
+.win { position: absolute; top: 22px; right: 22px; background: var(--lime); color: var(--ink); font-weight: 700; font-size: 13px; padding: 7px 13px; border-radius: 999px; transform: rotate(3deg); box-shadow: 0 10px 22px -10px rgb(61 107 0 / .7); }
+.verdict { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; padding: 18px 24px; background: var(--ink); color: #fff; font-size: 16px; }
+.verdict b { color: var(--lime); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.verdict .pct { background: var(--lime); color: var(--ink); font-weight: 700; padding: 5px 12px; border-radius: 999px; font-size: 15px; }
+
+.cmp-rows { margin-top: 18px; display: grid; gap: 12px; }
+.cmp-row { display: grid; grid-template-columns: 210px 1fr 150px; gap: 22px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
+.cmp-what b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.cmp-what span { font-size: 13.5px; color: var(--fg-2); }
+.bars { display: grid; gap: 9px; min-width: 0; }
+.bar { display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 12px; font-size: 13px; }
+.bar em { font-style: normal; font-weight: 600; }
+.bar.them em { color: var(--red); }
+.bar.us em { color: var(--green); }
+.track { position: relative; height: 30px; border-radius: 8px; background: var(--sunken); overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 8px; transition: width .9s cubic-bezier(.2, .7, .2, 1); }
+.bar.them .track i { background: repeating-linear-gradient(135deg, #f97066 0 10px, #f04438 10px 20px); }
+.bar.us .track i { background: var(--lime); }
+.track span { position: absolute; inset: 0 auto 0 12px; display: flex; align-items: center; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar.them .track span { color: #fff; text-decoration: line-through; }
+.bar.us .track span { color: var(--ink); }
+.cmp.pre .track i { width: 0; }
+.cmp-save { text-align: right; }
+.cmp-save b { display: inline-block; background: var(--lime-soft); border: 1px solid var(--lime-line); color: var(--green); font-size: 20px; font-weight: 700; letter-spacing: -.02em; padding: 6px 12px; border-radius: 12px; white-space: nowrap; }
+.cmp-save span { display: block; margin-top: 6px; font-size: 13.5px; color: var(--fg-2); white-space: nowrap; }
+.cmp-cta { margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.cmp-note { max-width: 760px; margin: 18px auto 0; text-align: center; font-size: 12.5px; color: var(--fg-3); }
+@media (max-width: 980px) {
+  .cmp-row { grid-template-columns: 1fr; gap: 14px; }
+  .cmp-save { text-align: left; display: flex; align-items: center; gap: 12px; }
+  .cmp-save span { margin-top: 0; }
+}
+@media (max-width: 720px) {
+  .duel { grid-template-columns: 1fr; }
+  .vs { width: auto; height: 0; }
+  .side-them, .side-us { padding: 26px 22px; }
+  .side-us { padding-top: 40px; }
+  .win { top: 12px; right: 14px; }
+  .cmp-row { padding: 18px; }
+  .bar { grid-template-columns: 78px 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .track i { transition: none; } }
+
+/* faq */
+.faq { max-width: 760px; margin: 0 auto; display: grid; gap: 10px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0 20px; }
+.faq summary { list-style: none; cursor: pointer; padding: 18px 0; font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; font-weight: 400; font-size: 22px; line-height: 1; color: var(--fg-3); }
+.faq details[open] summary::after { content: '\2212'; }
+.faq p { padding: 0 0 18px; color: var(--fg-2); font-size: 15px; }
+
+/* download + footer */
+.band { background: var(--ink); color: #fff; border-radius: 24px; padding: 60px 28px; text-align: center; }
+.band h2 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -.025em; line-height: 1.15; font-weight: 700; }
+.band p { margin: 14px auto 0; max-width: 540px; color: #a6afbd; font-size: 16px; }
+.band .cta { margin-top: 28px; }
+.band .fine { color: #76808f; }
+.soon { display: none; }
+.install { margin: 30px auto 0; max-width: 620px; }
+.install .fine { margin-top: 0; }
+.cmd { margin-top: 10px; display: flex; align-items: center; gap: 10px; background: #0b1220; border: 1px solid #253046; border-radius: 12px; padding: 10px 10px 10px 16px; text-align: left; }
+.cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font-family: var(--mono); font-size: 12.5px; color: #d5dbe5; }
+.cmd button { flex: none; font: inherit; font-size: 12.5px; font-weight: 600; color: #fff; background: #1d2739; border: 1px solid #36435a; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.cmd button:hover { background: #253046; }
+.install .steps { margin: 14px auto 0; padding: 0; list-style: none; color: #76808f; font-size: 13.5px; max-width: 540px; }
+[data-download-ready='false'] .install { display: none; }
+[data-download-ready='false'] .soon { display: block; }
+footer { padding: 44px 0 56px; color: var(--fg-2); font-size: 13.5px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; align-items: center; }
+footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
+footer a:hover { color: var(--fg); }
+.legal { max-width: 720px; margin-top: 18px; font-size: 12.5px; color: var(--fg-3); }
+
+@media (max-width: 980px) {
+  .overlay { position: relative; right: auto; top: auto; width: auto; margin: -70px 16px 0; }
+  .app { grid-template-columns: 1fr; border-radius: 18px; border-bottom: 1px solid var(--line); min-height: 0; }
+  .side { display: none; }
+  .stage { padding-bottom: 28px; }
+  .card, .card.wide { grid-column: span 3; }
+  .plans, .steps { grid-template-columns: 1fr; }
+  .plan .what { min-height: 0; }
+}
+@media (max-width: 720px) {
+  .nav-links { display: none; }
+  .section { padding: 64px 0; }
+  .hero { padding-top: 52px; }
+  .card, .card.wide { grid-column: span 6; }
+  .row { grid-template-columns: 1.6fr 1fr; }
+  .row > :nth-child(2), .row > :nth-child(3) { display: none; }
+  .main { padding: 18px; }
+  .overlay { margin: -14px 8px 0; }
+  .band { padding: 44px 20px; border-radius: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+</style>
+</head>
+<body data-download-ready="false">
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="Kairo home">
+      <span class="mark"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 3v12M4 9l8-6M4 9l8 6" fill="none" stroke="#101828" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Kairo
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#compare">Compare</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <a class="btn btn-dark btn-sm" href="#download">Try for free</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="chips">
+        <span class="chip"><span class="dot"></span><b>30 minutes free</b> no card needed</span>
+        <span class="chip"><b>English, Hindi, Hinglish</b></span>
+        <span class="chip">For <b>Windows</b></span>
+      </div>
+      <h1>Your <em>real-time</em> answer, while the call is still going</h1>
+      <p class="sub">Kairo listens to your call, catches the question, and puts an answer on your screen that you can say out loud. For interviews, client calls, and any conversation where going blank is not an option.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#download">Try for free</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <p class="fine">Free demo: 30 minutes of live time. Then ₹449 for a single hour, or plans from ₹1,499 a month.</p>
+
+      <div class="stage" aria-label="A picture of the Kairo dashboard with the answer overlay on top">
+        <div class="app">
+          <aside class="side">
+            <div class="brand"><span class="mark"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 3v12M4 9l8-6M4 9l8 6" fill="none" stroke="#101828" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Kairo</div>
+            <small>Assistant</small>
+            <div class="item">New session</div>
+            <div class="item on">Sessions</div>
+            <div class="item">Library</div>
+            <small>Practice</small>
+            <div class="item">Mock interview</div>
+            <div class="acct"><b>you@example.com</b><span>Plus · 4 h 20 min left</span></div>
+          </aside>
+          <div class="main">
+            <h4>Sessions</h4>
+            <p class="s">Start a call, or read the notes from an earlier one.</p>
+            <div class="row h"><span>Session</span><span>Mode</span><span>Length</span><span>State</span></div>
+            <div class="row"><span><b>Backend engineer</b><i>Interview round 2</i></span><span>Interview</span><span>11 min</span><span class="tag live">Live</span></div>
+            <div class="row"><span><b>Client kickoff</b><i>Notes ready</i></span><span>Call</span><span>37 min</span><span class="tag">Ended</span></div>
+            <div class="row"><span><b>Full stack developer</b><i>Notes ready</i></span><span>Interview</span><span>46 min</span><span class="tag">Ended</span></div>
+            <div class="row"><span><b>Practice round</b><i>Feedback report ready</i></span><span>Mock</span><span>24 min</span><span class="tag">Ended</span></div>
+          </div>
+        </div>
+        <div class="overlay">
+          <div class="o-bar"><span class="dot"></span><span>11:04</span><span class="sp"></span><span class="o-end">End</span></div>
+          <div class="o-them"><b>Them</b>How would you stop the same query from running again for every row in a list?</div>
+          <div class="o-ans">
+            <span class="o-type">Technical</span>
+            <p>That is the N+1 problem. I would fetch the related rows in the same query with select_related for a foreign key, or prefetch_related for a list, so the page makes two queries instead of one per row.</p>
+          </div>
+          <div class="o-foot"><span class="o-btn">Answer<span class="o-kbd">Ctrl+Enter</span></span><span class="o-btn q">Screenshot</span><span class="o-btn q">Clear</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <span>Works with <b>any call app</b> that plays through your computer</span>
+      <span>Never joins the meeting</span>
+      <span>No browser extension</span>
+    </div>
+  </div>
+
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Features</span>
+        <h2>Everything you need, mid&#8209;conversation</h2>
+        <p>It hears the question, writes the answer in your voice, and stays out of your way.</p>
+      </div>
+      <div class="grid">
+        <article class="card wide">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L4 14h7l-1 7 9-11h-7z"/></svg></span>
+          <h3>Answers that start when they stop talking</h3>
+          <p>Kairo waits for a real pause, so a question asked in two breaths is answered once, as a whole. Small talk and "can you hear me" are left alone.</p>
+          <div class="bubble">
+            <div class="q">So, tell me about… the hardest bug you fixed in your last project.</div>
+            <div class="a">The hardest one was a race condition in our order service. Two requests could reserve the same stock…</div>
+          </div>
+        </article>
+        <article class="card wide">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></span>
+          <h3>Coding questions, the way you would write them</h3>
+          <p>Brute force first, then the better solution, then edge cases. Open any code block on its own, switch between solutions, and press Esc to go back.</p>
+          <div class="code">
+            <div class="tabs"><span class="on">Optimal</span><span>Brute force</span><span>cpp</span><span class="esc">Esc</span></div>
+<pre><span class="k">class</span> Solution {
+<span class="k">public</span>:
+  <span class="t">bool</span> hasCycle(ListNode* head) {
+    ListNode* slow = head;
+    ListNode* fast = head;
+    <span class="k">while</span> (fast &amp;&amp; fast-&gt;next) {
+      slow = slow-&gt;next;
+      fast = fast-&gt;next-&gt;next;
+      <span class="k">if</span> (slow == fast) <span class="k">return</span> <span class="k">true</span>;
+    }
+    <span class="k">return</span> <span class="k">false</span>;
+  }
+};</pre>
+            <div class="note">Time O(n) · Space O(1)</div>
+          </div>
+        </article>
+        <article class="card">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h9M8 3v2M6 5c0 4 3 7 7 8M11 5c0 4-3 7-7 8M13 20l4-9 4 9M14.5 17h5"/></svg></span>
+          <h3>English, Hindi and Hinglish</h3>
+          <p>Asked in Hinglish, answered in Hinglish, written in Latin letters so it reads at a glance.</p>
+        </article>
+        <article class="card">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6l1.5-2h5L16 6"/></svg></span>
+          <h3>Answers from your screen</h3>
+          <p>One key sends a screenshot of the problem in front of you. Multiple choice, SQL and coding tasks are read straight off it.</p>
+        </article>
+        <article class="card">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/></svg></span>
+          <h3>Based on your resume</h3>
+          <p>Answers draw on your resume and documents and stick to what is in them, so nothing gets claimed that you cannot back up.</p>
+        </article>
+        <article class="card wide">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/></svg></span>
+          <h3>The right language for each question</h3>
+          <p>Tell Kairo your three choices once. It picks per question, and a language named in the question always wins.</p>
+          <div class="lang">
+            <div><span>Data structures and algorithms</span><b>C++</b></div>
+            <div><span>APIs and framework code</span><b>Django</b></div>
+            <div><span>Everything else</span><b>Python</b></div>
+          </div>
+        </article>
+        <article class="card wide">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6"/></svg></span>
+          <h3>Practice before, notes after</h3>
+          <p>Run a mock interview against a spoken interviewer and get a feedback report on every answer. After a real call, read the notes, the questions you were asked, and the full transcript, or ask about anything that was said.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Three steps, then just talk</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><h3>Set up the call</h3><p>Add your resume, paste the job link, and choose the language and answer style. Your choices are remembered for next time.</p></div>
+        <div class="step"><h3>Start the session</h3><p>A small window opens on top of your call and starts listening. Drag it anywhere, shrink it to a bar, or make it see-through.</p></div>
+        <div class="step"><h3>Read, then say it</h3><p>Answers appear as short lines written for speaking. Press one key for an answer on demand, or type a question yourself.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cmp" id="compare" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Compare</span>
+        <h2>The same help, for a fraction of the price</h2>
+        <p>What other interview assistants charge in India, next to Kairo, for the same amount of live time.</p>
+      </div>
+
+      <div class="duel">
+        <div class="side-them">
+          <span class="who"><i></i>Other platforms</span>
+          <span class="for">One hour of live help (1 credit)</span>
+          <p class="big">₹2,360</p>
+          <p class="small">Even in their largest credit pack, an hour is ₹738.</p>
+        </div>
+        <div class="vs" aria-hidden="true"><span>VS</span></div>
+        <div class="side-us">
+          <span class="win">80% less</span>
+          <span class="who"><i></i>Kairo</span>
+          <span class="for">One hour of live help (single hour)</span>
+          <p class="big">₹449</p>
+          <p class="small">Our highest price per hour. On a plan it is ₹250 or ₹200.</p>
+        </div>
+        <div class="verdict">
+          <span>You keep</span><b>₹1,911</b><span>on every hour</span><span class="pct">80% less</span>
+        </div>
+      </div>
+
+      <div class="cmp-rows">
+        <div class="cmp-row">
+          <div class="cmp-what"><b>3 hours</b><span>Three interviews</span></div>
+          <div class="bars">
+            <div class="bar them"><em>Others</em><div class="track"><i style="--w:100%"></i><span>₹3,690</span></div></div>
+            <div class="bar us"><em>Kairo</em><div class="track"><i style="--w:36.5%"></i><span>₹1,347</span></div></div>
+          </div>
+          <div class="cmp-save"><b>63% less</b><span>Save ₹2,343</span></div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-what"><b>6 hours</b><span>A month of interviews, on Plus</span></div>
+          <div class="bars">
+            <div class="bar them"><em>Others</em><div class="track"><i style="--w:100%"></i><span>₹5,535</span></div></div>
+            <div class="bar us"><em>Kairo</em><div class="track"><i style="--w:27.1%"></i><span>₹1,499</span></div></div>
+          </div>
+          <div class="cmp-save"><b>72% less</b><span>Save ₹4,036</span></div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-what"><b>A full month</b><span>Daily calls, on Pro (20 hours)</span></div>
+          <div class="bars">
+            <div class="bar them"><em>Others</em><div class="track"><i style="--w:100%"></i><span>₹9,470</span></div></div>
+            <div class="bar us"><em>Kairo</em><div class="track"><i style="--w:42.2%"></i><span>₹3,999</span></div></div>
+          </div>
+          <div class="cmp-save"><b>57% less</b><span>Save ₹5,471</span></div>
+        </div>
+      </div>
+
+      <div class="cmp-cta">
+        <a class="btn btn-primary" href="#download">Try 30 minutes free</a>
+        <a class="btn btn-ghost" href="#pricing">See all prices</a>
+      </div>
+      <p class="cmp-note">"Other platforms" shows the published India prices of a widely used real-time interview assistant, as listed on its website on 12 November 2026: 1 credit ₹2,360, 3 credits ₹3,690, 8 credits ₹7,380 (₹922.50 each, used for the 6-hour row), monthly plan ₹9,470. One credit there is one hour of live session. That monthly plan has no hour limit; Kairo Pro includes 20 hours. Prices on other platforms vary and can change. Kairo prices include GST.</p>
+    </div>
+  </section>
+
+  <section class="section" id="pricing" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Pricing</span>
+        <h2>Pay for the hours you are on a call</h2>
+        <p>Buy a single hour, or take a monthly plan for a lower price per hour. Prices include GST. Cancel a plan any time and keep the month you paid for.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free demo</h3>
+          <p class="price">₹0</p>
+          <p class="what">Thirty minutes to see it work on a real call.</p>
+          <ul>
+            <li>30 minutes of live time, once</li>
+            <li>Sessions up to 10 minutes</li>
+            <li>Live answers, typed questions, screenshots</li>
+            <li>1 mock interview</li>
+            <li class="no">Visible to others when you share your screen</li>
+            <li class="no">History is not saved</li>
+          </ul>
+          <a class="btn btn-ghost" href="#download">Try for free</a>
+        </div>
+        <div class="plan">
+          <h3>Single hour</h3>
+          <p class="price">₹449 <small>/ hour</small></p>
+          <p class="what">For one interview, with no subscription.</p>
+          <ul>
+            <li>1 hour of live time, used whenever you like</li>
+            <li>Does not expire; buy as many as you need</li>
+            <li>Sessions up to 90 minutes</li>
+            <li>Larger model for coding, SQL and system design</li>
+            <li>Hidden from screen shares and recordings</li>
+            <li>Notes, transcripts and history saved</li>
+          </ul>
+          <a class="btn btn-ghost" href="#download">Buy an hour</a>
+        </div>
+        <div class="plan pop">
+          <h3>Plus</h3>
+          <p class="price">₹1,499 <small>/ month</small></p>
+          <p class="what">For a month of interviews. ₹250 an hour.</p>
+          <ul>
+            <li>6 hours of live time a month</li>
+            <li>Sessions up to 90 minutes</li>
+            <li>Larger model for coding, SQL and system design</li>
+            <li>Hidden from screen shares and recordings</li>
+            <li>Notes, transcripts and history saved</li>
+            <li>5 mock interviews a month</li>
+            <li>Extra hours at ₹299 each</li>
+          </ul>
+          <a class="btn btn-primary" href="#download">Get Plus</a>
+        </div>
+        <div class="plan">
+          <h3>Pro</h3>
+          <p class="price">₹3,999 <small>/ month</small></p>
+          <p class="what">For daily calls and long rounds. ₹200 an hour.</p>
+          <ul>
+            <li>20 hours of live time a month</li>
+            <li>Sessions up to 3 hours</li>
+            <li>Larger model for coding, SQL and system design</li>
+            <li>Hidden from screen shares and recordings</li>
+            <li>Notes, transcripts and history saved</li>
+            <li>Mock interviews, counted against your hours</li>
+            <li>Extra hours at ₹249 each</li>
+          </ul>
+          <a class="btn btn-dark" href="#download">Get Pro</a>
+        </div>
+      </div>
+      <p class="pnote">Payments are handled by Razorpay. An account is signed in on one device at a time.</p>
+    </div>
+  </section>
+
+  <section class="section" id="faq" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Questions</span>
+        <h2>Good to know before you start</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>What do I get for free?</summary>
+          <p>Thirty minutes of live time in total, in sessions of up to ten minutes, with live answers, typed questions, screenshots and one mock interview. The demo is given once per person and per computer. On the demo, the Kairo window can be seen by anyone you share your screen with, and nothing is saved after the call.</p>
+        </details>
+        <details>
+          <summary>What counts as live time?</summary>
+          <p>The clock runs while a session is open, whether or not anyone is speaking. You are warned at five minutes and at one minute, and the session ends when the time is used up. More hours can be bought at any time, with or without a plan, and bought hours do not expire.</p>
+        </details>
+        <details>
+          <summary>Which languages does it understand?</summary>
+          <p>English, Hindi, and the two mixed together. In a mixed call the answer follows the language of the question, with Hindi written in Latin letters.</p>
+        </details>
+        <details>
+          <summary>Does it work with my meeting app?</summary>
+          <p>Kairo listens to the sound your computer plays and to your microphone, so it does not need to join the meeting or connect to the meeting app. If your computer's audio cannot be captured, it carries on with the microphone alone; put the call on speaker in that case.</p>
+        </details>
+        <details>
+          <summary>Can I use it on more than one computer?</summary>
+          <p>You can sign in anywhere, but only on one device at a time. Signing in on a second device signs the first one out.</p>
+        </details>
+        <details>
+          <summary>What happens to my calls and my resume?</summary>
+          <p>Audio is sent for transcription while a session runs and is not kept by Kairo. Once you have bought an hour or a plan, the transcript, the answers and the notes are saved to your account so you can read them later. You can delete your account from inside the app, which removes your sessions, transcripts, resumes and documents.</p>
+        </details>
+        <details>
+          <summary>Is it allowed to use this?</summary>
+          <p>That depends on where you use it. Kairo transcribes what other people say, and some places require their consent to record or transcribe a call. Many interviews and exams do not allow live AI help. Check the rules that apply to you, and use it where it is permitted.</p>
+        </details>
+        <details>
+          <summary>Which computers does it run on?</summary>
+          <p>Windows 11 for now.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="download" style="padding-top:0">
+    <div class="wrap">
+      <div class="band">
+        <h2>Try it on your next call</h2>
+        <p>Thirty minutes free. Sign in with your email, add your resume, and start a session.</p>
+        <div class="cta">
+          <a class="btn btn-primary" id="download-button" href="#download">Download for Windows</a>
+          <a class="btn btn-ghost" href="#pricing" style="background:transparent;color:#fff;border-color:#36435a">See pricing</a>
+        </div>
+        <p class="fine soon">The Windows installer is not published yet. This button will download it once it is.</p>
+        <div class="install">
+          <p class="fine">Or install from PowerShell with one command:</p>
+          <div class="cmd">
+            <code id="install-command">irm https://raw.githubusercontent.com/NikhilDendeti/kairo-releases/main/install.ps1 | iex</code>
+            <button type="button" id="copy-command">Copy</button>
+          </div>
+          <ul class="steps">
+            <li>Installs for your Windows account only, with no administrator prompt, and updates itself afterwards.</li>
+            <li>If Windows shows &ldquo;Windows protected your PC&rdquo; on the downloaded installer, choose More info, then Run anyway.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 3v12M4 9l8-6M4 9l8 6" fill="none" stroke="#101828" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Kairo</a>
+    <nav aria-label="Footer">
+      <a href="#features">Features</a>
+      <a href="#compare">Compare</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Questions</a>
+    </nav>
+  </div>
+  <div class="wrap">
+    <p class="legal">Kairo transcribes what other people say on a call. Some places require consent to record or transcribe, and many interviews and exams do not allow live AI help. Use it where it is permitted.</p>
+  </div>
+</footer>
+
+<script>
+  // Set this to the installer's address when it is published. Until then the page says so
+  // plainly instead of offering a link that goes nowhere.
+  const DOWNLOAD_URL = 'https://github.com/NikhilDendeti/kairo-releases/releases/latest/download/Kairo-Setup.exe'
+  if (DOWNLOAD_URL) {
+    document.body.dataset.downloadReady = 'true'
+    document.getElementById('download-button').href = DOWNLOAD_URL
+  }
+
+  const copy = document.getElementById('copy-command')
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('install-command').textContent)
+      copy.textContent = 'Copied'
+    } catch {
+      copy.textContent = 'Select and copy'
+    }
+    setTimeout(() => (copy.textContent = 'Copy'), 2000)
+  })
+
+  // The comparison bars grow to their length when they scroll into view. Without this script
+  // (or with reduced motion) they are simply shown at full length.
+  const compare = document.getElementById('compare')
+  if (compare && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    compare.classList.add('pre')
+    const seen = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          compare.classList.remove('pre')
+          seen.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    seen.observe(compare.querySelector('.cmp-rows'))
+  }
+</script>
+</body>
+</html>
