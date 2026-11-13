@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kairo: real-time answers during your calls</title>
 <meta name="description" content="Kairo listens to your call, catches the question, and puts an answer on your screen while you are still talking. English, Hindi and Hinglish. Free 30-minute demo.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -231,15 +234,54 @@ h1, h2, h3, p { margin: 0; }
 .band .cta { margin-top: 28px; }
 .band .fine { color: #76808f; }
 .soon { display: none; }
-.install { margin: 30px auto 0; max-width: 620px; }
+.install { margin: 30px auto 0; max-width: 760px; }
 .install .fine { margin-top: 0; }
 .cmd { margin-top: 10px; display: flex; align-items: center; gap: 10px; background: #0b1220; border: 1px solid #253046; border-radius: 12px; padding: 10px 10px 10px 16px; text-align: left; }
-.cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font-family: var(--mono); font-size: 12.5px; color: #d5dbe5; }
+/* The command wraps instead of scrolling sideways; it is copied with the button, not by hand. */
+.cmd code { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.6; font-family: var(--mono); font-size: 12px; color: #d5dbe5; }
 .cmd button { flex: none; font: inherit; font-size: 12.5px; font-weight: 600; color: #fff; background: #1d2739; border: 1px solid #36435a; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
 .cmd button:hover { background: #253046; }
-.install .steps { margin: 14px auto 0; padding: 0; list-style: none; color: #76808f; font-size: 13.5px; max-width: 540px; }
+.install-notes { display: block; margin: 16px auto 0; padding: 0; list-style: none; color: #76808f; font-size: 13.5px; max-width: 620px; }
+.install-notes li + li { margin-top: 6px; }
 [data-download-ready='false'] .install { display: none; }
+@media (max-width: 560px) {
+  .cmd { flex-direction: column; align-items: stretch; padding: 14px; }
+  .cmd button { padding: 9px 12px; }
+}
 [data-download-ready='false'] .soon { display: block; }
+
+/* Which computer the visitor is on. Kairo is a Windows app: everyone else is told so plainly. */
+.chip.os-ok { border-color: var(--lime-line); background: var(--lime-soft); color: var(--lime-ink); }
+.chip.os-ok b { color: var(--lime-ink); }
+.chip.os-no { border-color: #fecdca; background: var(--danger-soft); color: var(--danger); }
+.chip.os-no b { color: var(--danger); }
+.chip.os-no .dot { background: var(--danger); }
+.os-note { display: none; max-width: 620px; margin: 22px auto 0; padding: 14px 18px; border: 1px solid #fecdca; border-radius: 14px; background: var(--danger-soft); color: #912018; font-size: 15px; text-align: left; }
+.os-note b { display: block; font-size: 16px; color: var(--danger); margin-bottom: 2px; }
+body[data-supported='false'] .os-note { display: block; }
+.platforms { list-style: none; margin: 30px auto 0; padding: 0; max-width: 760px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: left; }
+.platforms li { position: relative; border: 1px solid #253046; border-radius: 14px; padding: 14px 14px 13px; background: #0b1220; }
+.platforms b { display: block; font-size: 14.5px; font-weight: 600; color: #fff; }
+.platforms span { display: flex; align-items: center; gap: 7px; margin-top: 4px; font-size: 13px; color: #76808f; }
+.platforms span::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #475467; }
+.platforms li.yes { border-color: rgb(157 229 0 / .45); }
+.platforms li.yes span { color: #b5f03a; }
+.platforms li.yes span::before { background: var(--lime); }
+.platforms li.here { box-shadow: 0 0 0 2px #fff; }
+.platforms li.here::after { content: 'Your device'; position: absolute; top: -10px; right: 10px; background: #fff; color: var(--ink); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.platforms li.here:not(.yes) { border-color: #f97066; box-shadow: 0 0 0 2px #f97066; }
+.platforms li.here:not(.yes)::after { background: #f97066; color: #fff; }
+.platforms li.here:not(.yes) span { color: #fda29b; }
+.platforms li.here:not(.yes) span::before { background: #f97066; }
+.blocked { display: none; margin: 26px auto 0; max-width: 620px; }
+.blocked h3 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; color: #fda29b; }
+.blocked p { margin-top: 8px; color: #a6afbd; font-size: 15px; }
+.blocked .cta { margin-top: 18px; }
+.blocked .anyway { display: inline-block; margin-top: 14px; font-size: 13px; color: #76808f; text-decoration: underline; text-underline-offset: 3px; }
+.blocked .anyway:hover { color: #d5dbe5; }
+body[data-supported='false'] .blocked { display: block; }
+body[data-supported='false'] .band .get, body[data-supported='false'] .install, body[data-supported='false'] .band .soon { display: none; }
+@media (max-width: 720px) { .platforms { grid-template-columns: repeat(2, 1fr); } }
 footer { padding: 44px 0 56px; color: var(--fg-2); font-size: 13.5px; }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; align-items: center; }
 footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
@@ -267,6 +309,17 @@ footer a:hover { color: var(--fg); }
   .band { padding: 44px 20px; border-radius: 18px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+
+/* works with */
+.apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 880px; margin: 0 auto; }
+.app-tile { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.app-tile i { flex: none; width: 40px; height: 40px; border-radius: 11px; background: var(--canvas); border: 1px solid var(--line); display: grid; place-items: center; }
+.app-tile i svg { width: 22px; height: 22px; }
+.app-tile small { display: block; font-size: 12px; font-weight: 500; color: var(--fg-3); letter-spacing: 0; margin-top: 1px; }
+.apps-note { text-align: center; margin-top: 22px; color: var(--fg-2); font-size: 15px; }
+.apps-note b { color: var(--fg); font-weight: 600; }
+@media (max-width: 860px) { .apps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .apps { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body data-download-ready="false">
@@ -294,7 +347,7 @@ footer a:hover { color: var(--fg); }
       <div class="chips">
         <span class="chip"><span class="dot"></span><b>30 minutes free</b> no card needed</span>
         <span class="chip"><b>English, Hindi, Hinglish</b></span>
-        <span class="chip">For <b>Windows</b></span>
+        <span class="chip" id="os-chip">Only for <b>Windows</b> right now</span>
       </div>
       <h1>Your <em>real-time</em> answer, while the call is still going</h1>
       <p class="sub">Kairo listens to your call, catches the question, and puts an answer on your screen that you can say out loud. For interviews, client calls, and any conversation where going blank is not an option.</p>
@@ -302,6 +355,7 @@ footer a:hover { color: var(--fg); }
         <a class="btn btn-primary" href="#download">Try for free</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
+      <p class="os-note" id="os-note" role="status"></p>
       <p class="fine">Free demo: 30 minutes of live time. Then ₹449 for a single hour, or plans from ₹1,499 a month.</p>
 
       <div class="stage" aria-label="A picture of the Kairo dashboard with the answer overlay on top">
@@ -341,11 +395,32 @@ footer a:hover { color: var(--fg); }
 
   <div class="strip">
     <div class="wrap">
-      <span>Works with <b>any call app</b> that plays through your computer</span>
+      <span>Works with <b>WhatsApp, Slack, Zoom, Meet, Teams</b> and any call app</span>
       <span>Never joins the meeting</span>
       <span>No browser extension</span>
     </div>
   </div>
+
+  <section class="section" id="works-with">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Works with</span>
+        <h2>Every call app you already use</h2>
+        <p>Kairo listens to your computer's sound, so there is nothing to install inside the call app and nothing to connect.</p>
+      </div>
+      <div class="apps">
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i><span>WhatsApp<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#4A154B"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg></i><span>Slack<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#0B5CFF"><path d="M5.033 14.649H.743a.74.74 0 0 1-.686-.458.74.74 0 0 1 .16-.808L3.19 10.41H1.06A1.06 1.06 0 0 1 0 9.35h3.957c.301 0 .57.18.686.458a.74.74 0 0 1-.161.808L1.51 13.59h2.464c.585 0 1.06.475 1.06 1.06zM24 11.338c0-1.14-.927-2.066-2.066-2.066-.61 0-1.158.265-1.537.686a2.061 2.061 0 0 0-1.536-.686c-1.14 0-2.066.926-2.066 2.066v3.311a1.06 1.06 0 0 0 1.06-1.06v-2.251a1.004 1.004 0 0 1 2.013 0v2.251c0 .586.474 1.06 1.06 1.06v-3.311a1.004 1.004 0 0 1 2.012 0v2.251c0 .586.475 1.06 1.06 1.06zM16.265 12a2.728 2.728 0 1 1-5.457 0 2.728 2.728 0 0 1 5.457 0zm-1.06 0a1.669 1.669 0 1 0-3.338 0 1.669 1.669 0 0 0 3.338 0zm-4.82 0a2.728 2.728 0 1 1-5.458 0 2.728 2.728 0 0 1 5.457 0zm-1.06 0a1.669 1.669 0 1 0-3.338 0 1.669 1.669 0 0 0 3.338 0z"/></svg></i><span>Zoom<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#00897B"><path d="M5.53 2.13 0 7.75h5.53zm.398 0v5.62h7.608v3.65l5.47-4.45c-.014-1.22.031-2.25-.025-3.46-.148-1.09-1.287-1.47-2.236-1.36zM23.1 4.32c-.802.295-1.358.995-2.047 1.49-2.506 2.05-4.982 4.12-7.468 6.19 3.025 2.59 6.04 5.18 9.065 7.76 1.218.671 1.428-.814 1.328-1.64v-13a.828.828 0 0 0-.877-.825zM.038 8.15v7.7h5.53v-7.7zm13.577 8.1H6.008v5.62c3.864-.006 7.737.011 11.58-.009 1.02-.07 1.618-1.12 1.468-2.07v-2.51l-5.47-4.68v3.65zm-13.577 0c.02 1.44-.041 2.88.033 4.31.162.948 1.158 1.43 2.047 1.31h3.464v-5.62z"/></svg></i><span>Google Meet<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#6264A7"><path d="M20.625 8.127q-.55 0-1.025-.205-.475-.205-.832-.563-.358-.357-.563-.832Q18 6.053 18 5.502q0-.54.205-1.02t.563-.837q.357-.358.832-.563.474-.205 1.025-.205.54 0 1.02.205t.837.563q.358.357.563.837.205.48.205 1.02 0 .55-.205 1.025-.205.475-.563.832-.357.358-.837.563-.48.205-1.02.205zm0-3.75q-.469 0-.797.328-.328.328-.328.797 0 .469.328.797.328.328.797.328.469 0 .797-.328.328-.328.328-.797 0-.469-.328-.797-.328-.328-.797-.328zM24 10.002v5.578q0 .774-.293 1.46-.293.685-.803 1.194-.51.51-1.195.803-.686.293-1.459.293-.445 0-.908-.105-.463-.106-.85-.329-.293.95-.855 1.729-.563.78-1.319 1.336-.756.557-1.67.861-.914.305-1.898.305-1.148 0-2.162-.398-1.014-.399-1.805-1.102-.79-.703-1.312-1.664t-.674-2.086h-5.8q-.411 0-.704-.293T0 16.881V6.873q0-.41.293-.703t.703-.293h8.59q-.34-.715-.34-1.5 0-.727.275-1.365.276-.639.75-1.114.475-.474 1.114-.75.638-.275 1.365-.275t1.365.275q.639.276 1.114.75.474.475.75 1.114.275.638.275 1.365t-.275 1.365q-.276.639-.75 1.113-.475.475-1.114.75-.638.276-1.365.276-.188 0-.375-.024-.188-.023-.375-.058v1.078h10.875q.469 0 .797.328.328.328.328.797zM12.75 2.373q-.41 0-.78.158-.368.158-.638.434-.27.275-.428.639-.158.363-.158.773 0 .41.158.78.159.368.428.638.27.27.639.428.369.158.779.158.41 0 .773-.158.364-.159.64-.428.274-.27.433-.639.158-.369.158-.779 0-.41-.158-.773-.159-.364-.434-.64-.275-.275-.639-.433-.363-.158-.773-.158zM6.937 9.814h2.25V7.94H2.814v1.875h2.25v6h1.875zm10.313 7.313v-6.75H12v6.504q0 .41-.293.703t-.703.293H8.309q.152.809.556 1.5.405.691.985 1.19.58.497 1.318.779.738.281 1.582.281.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752zm5.25-1.547v-5.203h-3.75v6.855q.305.305.691.452.387.146.809.146.469 0 .879-.176.41-.175.715-.48.304-.305.48-.715t.176-.879Z"/></svg></i><span>Microsoft Teams<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#5865F2"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></i><span>Discord<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#00AFF0"><path d="M12.069 18.874c-4.023 0-5.82-1.979-5.82-3.464 0-.765.561-1.296 1.333-1.296 1.723 0 1.273 2.477 4.487 2.477 1.641 0 2.55-.895 2.55-1.811 0-.551-.269-1.16-1.354-1.429l-3.576-.895c-2.88-.724-3.403-2.286-3.403-3.751 0-3.047 2.861-4.191 5.549-4.191 2.471 0 5.393 1.373 5.393 3.199 0 .784-.688 1.24-1.453 1.24-1.469 0-1.198-2.037-4.164-2.037-1.469 0-2.292.664-2.292 1.617s1.153 1.258 2.157 1.487l2.637.587c2.891.649 3.624 2.346 3.624 3.944 0 2.476-1.902 4.324-5.722 4.324m11.084-4.882l-.029.135-.044-.24c.015.045.044.074.059.12.12-.675.181-1.363.181-2.052 0-1.529-.301-3.012-.898-4.42-.569-1.348-1.395-2.562-2.427-3.596-1.049-1.033-2.247-1.856-3.595-2.426-1.318-.631-2.801-.93-4.328-.93-.72 0-1.444.07-2.143.204l.119.06-.239-.033.119-.025C8.91.274 7.829 0 6.731 0c-1.789 0-3.47.698-4.736 1.967C.729 3.235.032 4.923.032 6.716c0 1.143.292 2.265.844 3.258l.02-.124.041.239-.06-.115c-.114.645-.172 1.299-.172 1.955 0 1.53.3 3.017.884 4.416.568 1.362 1.378 2.576 2.427 3.609 1.034 1.05 2.247 1.857 3.595 2.442 1.394.6 2.877.898 4.404.898.659 0 1.334-.06 1.977-.179l-.119-.062.24.046-.135.03c1.002.569 2.126.871 3.294.871 1.783 0 3.459-.69 4.733-1.963 1.259-1.259 1.962-2.951 1.962-4.749 0-1.138-.299-2.262-.853-3.266"/></svg></i><span>Skype<small>Tested, works</small></span></div>
+        <div class="app-tile"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="#07C1E4"><path d="M21.78 7.376c.512 1.181.032 2.644-1.11 3.106-2.157.888-3-1.295-3-1.295-.236-.55-.727-1.496-1.335-1.496-.204 0-.503 0-.94.844-.229.443-.434 1.185-.616 1.84l-.09.32c-.373-1.587-.821-3.454-1.536-4.816-.195-.38-.42-.74-.673-1.08a5.135 5.135 0 0 1 1.743-1.337 4.891 4.891 0 0 1 2.112-.463c1.045 0 2.765.338 4.227 2.227.167.206.317.424.448.654.278.441.52.904.726 1.383l.043.113zM.02 8.4C-.15 7.105.8 5.845 1.953 5.755c1.794-.157 2.36 1.385 2.455 1.89l.022.137c.07.44.29 1.838.48 2.744.078.4.244 1.013.353 1.416l.006.022.026.092c.11.4.232.799.362 1.193.185.548.399 1.085.641 1.61.47.955.93 1.45 1.367 1.45.203 0 .512 0 .96-.878.283-.59.512-1.208.684-1.845.373 1.598.811 3.128 1.495 4.456.205.406.444.794.715 1.16a5.124 5.124 0 0 1-1.742 1.338 4.88 4.88 0 0 1-2.112.461c-1.548 0-3.727-.698-5.339-4.005a22.407 22.407 0 0 1-1.078-2.824 26.848 26.848 0 0 1-.693-2.656 48.56 48.56 0 0 1-.215-1.114C.191 9.603.074 8.872.02 8.4zm22.047-2.645-.202-.022h-.052c.222.392.421.797.597 1.215l.053.113c.322.76.346 1.614.068 2.391a3.079 3.079 0 0 1-1.552 1.749 2.93 2.93 0 0 1-1.228.28 3.115 3.115 0 0 1-.854-.135c-.299 1.182-.768 2.634-1.195 3.511-.427.877-.93 1.451-1.378 1.451-.192 0-.501 0-.95-.877a10.746 10.746 0 0 1-.683-1.845 38.722 38.722 0 0 1-.396-1.575 12.67 12.67 0 0 1-.136-.598l-.002-.01c-.406-1.778-.865-3.645-1.655-5.142A8.263 8.263 0 0 0 11.52 4.8a5.136 5.136 0 0 0-1.748-1.34A4.892 4.892 0 0 0 7.654 3c-1.036 0-2.754.338-4.217 2.228.466.223.867.562 1.164.984.305.433.499.933.565 1.458.076.563.256 1.654.47 2.688l.001.007c.021.11.042.221.073.342.126-.34.25-.642.38-.955l.112-.271.128-.293c.235-.55.726-1.496 1.324-1.496.213 0 .513 0 .95.844.296.606.532 1.239.706 1.89.138.507.276 1.047.394 1.587.04.148.07.296.101.444l.006.028c.427 1.879.875 3.69 1.644 5.187.159.317.34.622.545.911.15.215.31.422.48.62 1.27 1.45 2.733 1.8 3.843 1.8 1.548 0 3.738-.698 5.35-4.006.822-1.7 1.515-4.208 1.772-5.48.256-1.27.449-2.419.534-3.115.04-.307.023-.618-.051-.918-.075-.299-.205-.579-.382-.825a2.247 2.247 0 0 0-.653-.607 2.143 2.143 0 0 0-.826-.296z"/></svg></i><span>Webex<small>Tested, works</small></span></div>
+      </div>
+      <p class="apps-note"><b>Voice calls, video calls and meetings.</b> If it plays sound on your computer, Kairo can hear it. It never joins the call.</p>
+    </div>
+  </section>
 
   <section class="section" id="features">
     <div class="wrap">
@@ -589,7 +664,7 @@ footer a:hover { color: var(--fg); }
         </details>
         <details>
           <summary>Does it work with my meeting app?</summary>
-          <p>Kairo listens to the sound your computer plays and to your microphone, so it does not need to join the meeting or connect to the meeting app. If your computer's audio cannot be captured, it carries on with the microphone alone; put the call on speaker in that case.</p>
+          <p>Yes: WhatsApp, Slack, Zoom, Google Meet, Microsoft Teams, Discord, Skype and Webex all work, and so does any other app that plays sound on your computer. Kairo listens to the sound your computer plays and to your microphone, so it does not need to join the meeting or connect to the meeting app. If your computer's audio cannot be captured, it carries on with the microphone alone; put the call on speaker in that case.</p>
         </details>
         <details>
           <summary>Can I use it on more than one computer?</summary>
@@ -605,7 +680,7 @@ footer a:hover { color: var(--fg); }
         </details>
         <details>
           <summary>Which computers does it run on?</summary>
-          <p>Windows 11 for now.</p>
+          <p>Windows 11 only, for now. It does not run on macOS, Linux, Chromebooks, phones or tablets, and there is no web version. This page checks your device and tells you if it is not supported.</p>
         </details>
       </div>
     </div>
@@ -616,10 +691,26 @@ footer a:hover { color: var(--fg); }
       <div class="band">
         <h2>Try it on your next call</h2>
         <p>Thirty minutes free. Sign in with your email, add your resume, and start a session.</p>
-        <div class="cta">
+        <div class="cta get">
           <a class="btn btn-primary" id="download-button" href="#download">Download for Windows</a>
           <a class="btn btn-ghost" href="#pricing" style="background:transparent;color:#fff;border-color:#36435a">See pricing</a>
         </div>
+        <!-- Shown instead of the download button when the visitor is not on a Windows computer. -->
+        <div class="blocked">
+          <h3 id="blocked-title">Kairo is only for Windows right now</h3>
+          <p id="blocked-text">It cannot be installed on this device. Open this page on a Windows 11 computer to download it.</p>
+          <div class="cta">
+            <button type="button" class="btn btn-primary" id="copy-link">Copy link to open on a Windows PC</button>
+            <a class="btn btn-ghost" href="#pricing" style="background:transparent;color:#fff;border-color:#36435a">See pricing</a>
+          </div>
+          <a class="anyway" id="download-anyway" href="#download">Download the Windows installer anyway, to move it to a Windows PC</a>
+        </div>
+        <ul class="platforms" aria-label="Where Kairo runs">
+          <li class="yes" data-os="windows"><b>Windows 11</b><span>Available now</span></li>
+          <li data-os="mac"><b>macOS</b><span>Not available</span></li>
+          <li data-os="linux"><b>Linux</b><span>Not available</span></li>
+          <li data-os="mobile"><b>Phone or tablet</b><span>Not available</span></li>
+        </ul>
         <p class="fine soon">The Windows installer is not published yet. This button will download it once it is.</p>
         <div class="install">
           <p class="fine">Or install from PowerShell with one command:</p>
@@ -627,7 +718,7 @@ footer a:hover { color: var(--fg); }
             <code id="install-command">irm https://raw.githubusercontent.com/NikhilDendeti/kairo-releases/main/install.ps1 | iex</code>
             <button type="button" id="copy-command">Copy</button>
           </div>
-          <ul class="steps">
+          <ul class="install-notes">
             <li>Installs for your Windows account only, with no administrator prompt, and updates itself afterwards.</li>
             <li>If Windows shows &ldquo;Windows protected your PC&rdquo; on the downloaded installer, choose More info, then Run anyway.</li>
           </ul>
@@ -659,7 +750,76 @@ footer a:hover { color: var(--fg); }
   if (DOWNLOAD_URL) {
     document.body.dataset.downloadReady = 'true'
     document.getElementById('download-button').href = DOWNLOAD_URL
+    document.getElementById('download-anyway').href = DOWNLOAD_URL
+  } else {
+    document.getElementById('download-anyway').hidden = true
   }
+
+  // Kairo is a Windows app. Work out what the visitor is on, so a Windows visitor is told this
+  // is their download and everyone else is told plainly that it will not install here.
+  // `?os=mac` (windows | mac | linux | android | ios | chromeos) previews another device.
+  function detectDevice() {
+    const forced = new URLSearchParams(location.search).get('os')
+    if (forced) return forced.toLowerCase()
+    const ua = navigator.userAgent || ''
+    const platform = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase()
+    if (/android/i.test(ua)) return 'android'
+    // An iPad reports itself as a Mac; a Mac has no touch screen.
+    if (/iphone|ipad|ipod/i.test(ua) || (platform.includes('mac') && navigator.maxTouchPoints > 1)) return 'ios'
+    if (/cros/i.test(ua)) return 'chromeos'
+    if (platform.includes('win') || /windows/i.test(ua)) return 'windows'
+    if (platform.includes('mac') || /mac os x/i.test(ua)) return 'mac'
+    if (platform.includes('linux') || /linux|x11/i.test(ua)) return 'linux'
+    return 'unknown'
+  }
+  const DEVICES = {
+    windows: { name: 'Windows', card: 'windows' },
+    mac: { name: 'macOS', a: 'a Mac', card: 'mac' },
+    linux: { name: 'Linux', a: 'a Linux computer', card: 'linux' },
+    android: { name: 'Android', a: 'an Android device', card: 'mobile' },
+    ios: { name: 'iPhone or iPad', a: 'an iPhone or iPad', card: 'mobile' },
+    chromeos: { name: 'ChromeOS', a: 'a Chromebook', card: null }
+  }
+  const detected = detectDevice()
+  const device = Object.hasOwn(DEVICES, detected) ? DEVICES[detected] : null
+  const chip = document.getElementById('os-chip')
+  if (device) {
+    const supported = device.card === 'windows'
+    document.body.dataset.supported = String(supported)
+    const card = device.card && document.querySelector(`.platforms li[data-os="${device.card}"]`)
+    if (card) card.classList.add('here')
+    if (supported) {
+      chip.className = 'chip os-ok'
+      chip.innerHTML = '<span class="dot"></span><b>Windows</b> detected, ready to install'
+    } else {
+      chip.className = 'chip os-no'
+      chip.innerHTML = `<span class="dot"></span>Windows only. You are on <b>${device.name}</b>`
+      document.getElementById('os-note').innerHTML =
+        `<b>You are on ${device.a}. Kairo is only for Windows right now.</b>` +
+        'You can read about it here, but it will not install or run on this device. To use it, open this page on a Windows 11 computer.'
+      document.getElementById('blocked-title').textContent = `Not available for ${device.name}`
+      document.getElementById('blocked-text').textContent =
+        `You are on ${device.a}, and Kairo is only for Windows right now. It cannot be installed on this device. Open this page on a Windows 11 computer to download it.`
+      // The "Try for free" buttons say so too. They still lead to the explanation at the bottom.
+      for (const link of document.querySelectorAll('a.btn[href="#download"]')) {
+        if (!/try/i.test(link.textContent)) continue
+        // The small one in the menu bar has to fit beside the logo on a phone.
+        link.textContent = link.classList.contains('btn-sm') ? 'Windows only' : 'Only for Windows right now'
+      }
+    }
+  }
+
+  const copyLink = document.getElementById('copy-link')
+  copyLink.addEventListener('click', async () => {
+    const label = copyLink.textContent
+    try {
+      await navigator.clipboard.writeText(location.origin + location.pathname)
+      copyLink.textContent = 'Link copied'
+    } catch {
+      copyLink.textContent = location.host || 'Copy the address from the address bar'
+    }
+    setTimeout(() => (copyLink.textContent = label), 2500)
+  })
 
   const copy = document.getElementById('copy-command')
   copy.addEventListener('click', async () => {
